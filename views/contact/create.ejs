@@ -1,16 +1,6 @@
 <%- contentFor('main') %>
-<h1>Create Contact</h1>
 
-<!-- show error if exists -->
-<% if (errors) { %>
-  <div role="alert" style="color: red">
-    <ul>
-      <% errors.forEach(function(error) { %>
-        <li><%= error.msg %></li>
-      <% }) %>
-    </ul>
-  </div>
-<% } %>
+<h1>Create Contact</h1>
 
 <form action="/contact" method="POST">
   <div class="form-group">

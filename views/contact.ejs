@@ -1,5 +1,17 @@
 <%- contentFor('main') %>
 <h1>Contact</h1>
+
+<% if(flashData.length > 0) { %>
+<% flashData.forEach((item) => { %>
+<div class="alert alert-<%= item.type %> alert-dismissible fade show" id="alert" role="alert">
+    <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <%= item.message %>
+</div>
+<% }) %>
+<% } %>
+
 <a href="/contact/add" class="btn btn-primary">Add Contact</a>
 <table class="table table-bordered table-striped table-hover" style="margin-top: 20px;">
     <tr>

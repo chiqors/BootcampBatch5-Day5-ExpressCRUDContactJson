@@ -5,6 +5,8 @@ const morgan = require('morgan')
 const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
 const validator = require('validator');
+const session = require('express-session');
+const { flash } = require('express-flash-message');
 // import composables
 const fileData = require('./composables/fileData')
 const contactData = require('./composables/contactData')
@@ -27,6 +29,18 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 // support method override with POST having ?_method=VALUE
 app.use(methodOverride('_method'))
+// support session
+app.use(session({
+    secret: 'secret',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+      // secure: true, // becareful set this option, check here: https://www.npmjs.com/package/express-session#cookiesecure. In local, if you set this to true, you won't receive flash as you are using `http` in local, but http is not secure
+    },
+}));
+// apply express-flash-message middleware
+app.use(flash({ sessionKeyName: 'flashMessage' }));
 
 // the use() method is used to add middleware functions to the request handler chain
 // app.use((req, res, next) => {
@@ -50,10 +64,12 @@ app.get('/about', (req, res) => {
 // CRUD
 
 // Read
-app.get('/contact', (req, res) => {
+app.get('/contact', async(req, res) => {
     const contacts = fileData.loadData()
+    const flashData = await req.consumeFlash('info')
     res.render('contact', {
         contacts,
+        flashData,
         title: 'Contact Page'
     })
 })
@@ -61,16 +77,20 @@ app.get('/contact', (req, res) => {
 // Create
 app.get('/contact/add', (req, res) => {
     res.render('contact/create', {
-        error,
         title: 'Add Contact Page'
     })
 })
 
 // Store
-app.post('/contact', (req, res) => {
+app.post('/contact', async(req, res) => {
     const data = req.body
     contactData.storeContact(data)
-    res.redirect('/contact')
+    const flashObject = {
+        type: 'success',
+        message: 'Contact has been added'
+    }
+    await req.flash('info', flashObject)
+    return res.redirect('/contact')
 })
 
 // Show Detail
@@ -92,15 +112,25 @@ app.get('/contact/edit/:name', (req, res) => {
 })
 
 // Update
-app.put('/contact', (req, res) => {
+app.put('/contact', async(req, res) => {
     let data = req.body
+    const flashObject = {
+        type: 'success',
+        message: 'Contact has been updated'
+    }
+    await req.flash('info', flashObject)
     contactData.updateContact(data)
     res.redirect('/contact')
 })
 
 // Delete
-app.delete('/contact', (req, res) => {
+app.delete('/contact', async(req, res) => {
     const data = req.body
+    const flashObject = {
+        type: 'success',
+        message: 'Contact has been deleted'
+    }
+    await req.flash('info', flashObject)
     contactData.deleteContact(data)
     res.redirect('/contact')
 })
