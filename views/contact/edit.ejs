@@ -1,0 +1,23 @@
+<%- contentFor('main') %>
+<h1>Edit Contact</h1>
+
+<% if (contact) { %>
+<form action="/contact?_method=PUT" method="post">
+    <input type="hidden" name="nama_lama" value="<%= contact.nama %>">
+    <div class="form-group">
+        <label for="nama">Nama Baru</label>
+        <input type="text" class="form-control" id="nama" name="nama" placeholder="Masukkan nama" value="<%= contact.nama %>">
+    </div>
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" class="form-control" id="email" name="email" placeholder="Masukkan email" value="<%= contact.email %>">
+    </div>
+    <div class="form-group">
+        <label for="notelp">No HP</label>
+        <input type="text" class="form-control" id="notelp" name="notelp" placeholder="Masukkan no hp" value="<%= contact.notelp %>">
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+</form>
+<% } else { %>
+<h3>data contact tidak ditemukan</h3>
+<% } %>
