@@ -2,6 +2,17 @@
 
 <h1>Create Contact</h1>
 
+<% if(flashMessage.length > 0) { %>
+<% flashMessage.forEach((item) => { %>
+<div class="alert alert-<%= item.type %> alert-dismissible fade show" id="alert" role="alert">
+    <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <%= item.message %>
+</div>
+<% }) %>
+<% } %>
+
 <form action="/contact" method="POST">
   <div class="form-group">
     <label for="nama">Nama</label>

@@ -4,12 +4,12 @@ const expressLayouts = require('express-ejs-layouts')
 const morgan = require('morgan')
 const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
-const validator = require('validator');
 const session = require('express-session');
 const { flash } = require('express-flash-message');
-// import composables
+// import composables & helpers
 const fileData = require('./composables/fileData')
 const contactData = require('./composables/contactData')
+const helper = require('./composables/helper')
 // express variable & routing
 const app = express()
 const port = 3000
@@ -75,8 +75,10 @@ app.get('/contact', async(req, res) => {
 })
 
 // Create
-app.get('/contact/add', (req, res) => {
+app.get('/contact/add', async(req, res) => {
+    const flashData = await req.consumeFlash('info')
     res.render('contact/create', {
+        flashMessage: flashData,
         title: 'Add Contact Page'
     })
 })
@@ -84,6 +86,7 @@ app.get('/contact/add', (req, res) => {
 // Store
 app.post('/contact', async(req, res) => {
     const data = req.body
+    await helper.validateAll(data, req, res)
     contactData.storeContact(data)
     const flashObject = {
         type: 'success',
@@ -114,12 +117,13 @@ app.get('/contact/edit/:name', (req, res) => {
 // Update
 app.put('/contact', async(req, res) => {
     let data = req.body
+    await helper.validateAll(data, req, res)
+    contactData.updateContact(data)
     const flashObject = {
         type: 'success',
         message: 'Contact has been updated'
     }
     await req.flash('info', flashObject)
-    contactData.updateContact(data)
     res.redirect('/contact')
 })
 
@@ -135,9 +139,9 @@ app.delete('/contact', async(req, res) => {
     res.redirect('/contact')
 })
 
-// app.get('/product/:product_id/category/:category_type', (req, res) => {
-//     res.send(req.params)
-// })
+app.get('/product/:product_id/category/:category_type', (req, res) => {
+    res.send(req.params)
+})
 
 // Error Handling
 app.use('/', (req, res) => {
