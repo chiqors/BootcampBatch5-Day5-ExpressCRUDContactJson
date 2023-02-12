@@ -1,4 +1,4 @@
-const fileData = require('./fileData')
+const fileData = require('../handler/fileData')
 
 function getContactByName(nama) {
     const dataContact = fileData.loadData()

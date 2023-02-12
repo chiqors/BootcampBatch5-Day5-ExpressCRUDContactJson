@@ -1,16 +1,28 @@
 <%- contentFor('main') %>
 <h1>Edit Contact</h1>
 
+<% if(flashMessage.length > 0) { %>
+<% flashMessage.forEach((item) => { %>
+<% console.log('item: ', item) %>
+<div class="alert alert-<%= item.type %> alert-dismissible fade show" id="alert" role="alert">
+    <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <%= item.message %>
+</div>
+<% }) %>
+<% } %>
+
 <% if (contact) { %>
 <form action="/contact?_method=PUT" method="post">
     <input type="hidden" name="nama_lama" value="<%= contact.nama %>">
     <div class="form-group">
-        <label for="nama">Nama Baru</label>
-        <input type="text" class="form-control" id="nama" name="nama" placeholder="Masukkan nama" value="<%= contact.nama %>">
+        <label for="nama">Nama Baru (<%= contact.nama %>)</label>
+        <input type="text" class="form-control" id="nama" name="nama" placeholder="Masukkan nama" value="<%= contact.nama %>" required>
     </div>
     <div class="form-group">
         <label for="email">Email</label>
-        <input type="email" class="form-control" id="email" name="email" placeholder="Masukkan email" value="<%= contact.email %>">
+        <input type="email" class="form-control" id="email" name="email" placeholder="Masukkan email" value="<%= contact.email %>" required>
     </div>
     <div class="form-group">
         <label for="notelp">No HP</label>

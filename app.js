@@ -6,13 +6,10 @@ const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
 const session = require('express-session');
 const { flash } = require('express-flash-message');
-// import composables & helpers
-const fileData = require('./composables/fileData')
-const contactData = require('./composables/contactData')
-const helper = require('./composables/helper')
 // express variable & routing
 const app = express()
 const port = 3000
+const webRouter = require("./routes/web");
 
 // Information using EJS & EJS-Layouts
 app.set('view engine', 'ejs')
@@ -48,106 +45,8 @@ app.use(flash({ sessionKeyName: 'flashMessage' }));
 //     next()
 // })
 
-// URL Request
-app.get('/', (req, res) => {
-    res.render('index', {
-        title: 'Home Page',
-    })
-})
-
-app.get('/about', (req, res) => {
-    res.render('about', {
-        title: 'About Page',
-    })
-})
-
-// CRUD
-
-// Read
-app.get('/contact', async(req, res) => {
-    const contacts = fileData.loadData()
-    const flashData = await req.consumeFlash('info')
-    res.render('contact', {
-        contacts,
-        flashData,
-        title: 'Contact Page'
-    })
-})
-
-// Create
-app.get('/contact/add', async(req, res) => {
-    const flashData = await req.consumeFlash('info')
-    res.render('contact/create', {
-        flashMessage: flashData,
-        title: 'Add Contact Page'
-    })
-})
-
-// Store
-app.post('/contact', async(req, res) => {
-    const data = req.body
-    await helper.validateAll(data, req, res)
-    contactData.storeContact(data)
-    const flashObject = {
-        type: 'success',
-        message: 'Contact has been added'
-    }
-    await req.flash('info', flashObject)
-    return res.redirect('/contact')
-})
-
-// Show Detail
-app.get('/contact/show/:name', (req, res) => {
-    const contact = contactData.getContactByName(req.params.name)
-    res.render('contact/show', {
-        contact,
-        title: 'Show Contact Page'
-    })
-})
-
-// Edit
-app.get('/contact/edit/:name', (req, res) => {
-    const contact = contactData.getContactByName(req.params.name)
-    res.render('contact/edit', {
-        contact,
-        title: 'Edit Contact Page'
-    })
-})
-
-// Update
-app.put('/contact', async(req, res) => {
-    let data = req.body
-    await helper.validateAll(data, req, res)
-    contactData.updateContact(data)
-    const flashObject = {
-        type: 'success',
-        message: 'Contact has been updated'
-    }
-    await req.flash('info', flashObject)
-    res.redirect('/contact')
-})
-
-// Delete
-app.delete('/contact', async(req, res) => {
-    const data = req.body
-    const flashObject = {
-        type: 'success',
-        message: 'Contact has been deleted'
-    }
-    await req.flash('info', flashObject)
-    contactData.deleteContact(data)
-    res.redirect('/contact')
-})
-
-app.get('/product/:product_id/category/:category_type', (req, res) => {
-    res.send(req.params)
-})
-
-// Error Handling
-app.use('/', (req, res) => {
-    res.status(404)
-    res.send('404 Page Not Found')
-})
+// use web router
+app.use("/", webRouter);
 
 // Run server
 app.listen(port, () => {
