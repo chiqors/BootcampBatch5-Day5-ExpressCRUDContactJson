@@ -38,10 +38,12 @@ async function validateEmail(email) {
 async function validatePhone(phone) {
     let flashObject = {}
     // Check empty phone
-    if (!validator.isMobilePhone(phone, 'id-ID')) {
-        flashObject = {
-            type: 'danger',
-            message: 'Phone is not valid'
+    if (!validator.isEmpty(phone)) {
+        if (!validator.isMobilePhone(phone, 'id-ID')) {
+            flashObject = {
+                type: 'danger',
+                message: 'Phone is not valid'
+            }
         }
     }
     return flashObject
