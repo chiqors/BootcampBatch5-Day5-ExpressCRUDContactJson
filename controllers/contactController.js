@@ -27,6 +27,7 @@ async function store(req, res) {
         await req.flash('info', errors)
         const flashData = await req.consumeFlash('info')
         console.log(flashData[0])
+        res.status(400)
         return res.render('contact/create', {
             flashMessage: flashData[0],
             title: 'Add Contact Page'
@@ -67,6 +68,7 @@ async function update(req, res) {
         const flashData = await req.consumeFlash('info')
         console.log(flashData[0])
         const contactData = contact.getContactByName(req.body.nama_lama)
+        res.status(400)
         return res.render('contact/edit', {
             contact: contactData,
             flashMessage: flashData[0],

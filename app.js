@@ -6,6 +6,8 @@ const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
 const session = require('express-session');
 const { flash } = require('express-flash-message');
+const path = require('path')
+const rfs = require('rotating-file-stream')
 // express variable & routing
 const app = express()
 const port = 3000
@@ -18,7 +20,13 @@ app.set('layout', 'layout/mainLayout')
 app.use(express.static('public'))
 
 // HTTP request logger middleware for node.js
-app.use(morgan('dev'))
+// create a rotating write stream
+var accessLogStream = rfs.createStream('access.log', {
+  interval: '1d', // rotate daily
+  path: path.join(__dirname, 'logs')
+})
+// setup the logger
+app.use(morgan('combined', { stream: accessLogStream }))
 
 // support parsing of application/json type post data
 app.use(bodyParser.json())
